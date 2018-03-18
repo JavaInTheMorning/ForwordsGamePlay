@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_orange_light"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:weightSum="1000">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="266"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp"
+        android:weightSum="10">
+
+        <Button
+            android:id="@+id/topLeftImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="left"
+            android:layout_weight="5"
+            android:background="@drawable/round_button"
+            android:text="Bannana"></Button>
+
+        <Button
+            android:id="@+id/topRightImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/topLeftImage"
+            android:layout_alignBottom="@+id/topLeftImage"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="right"
+            android:layout_weight="5"
+            android:background="@drawable/round_button"
+            android:text="Cherry"></Button>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="266"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp">
+
+        <ImageView
+            android:id="@+id/mainImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/fruit_banana_"></ImageView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="266"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp"
+        android:weightSum="10">
+
+        <Button
+            android:id="@+id/bottomLeftImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/round_button"
+            android:layout_gravity="left"
+            android:layout_weight="5"
+            android:text="apple"></Button>
+
+        <Button
+            android:id="@+id/bottomRightImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/round_button"
+            android:layout_gravity="right"
+            android:layout_weight="5"
+            android:text="grape"></Button>
+
+
+    </RelativeLayout>
+
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:layout_gravity="bottom"
+    android:layout_weight="200"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="100dp"
+    android:paddingRight="100dp"
+    android:weightSum="10">
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_weight="5"
+        android:layout_margin="10dp"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        />
+
+    <TextView
+        android:id="@+id/loadingCompleteTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="5"
+        android:text="Out Of Time"
+        android:textSize="24sp"
+        android:visibility="invisible" />
+</RelativeLayout>
+
+</LinearLayout>
