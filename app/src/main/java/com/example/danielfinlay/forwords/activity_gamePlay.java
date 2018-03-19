@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -68,6 +69,7 @@ public class activity_gamePlay extends AppCompatActivity {
                 String[] s = fields[i].toString().split("_");
                 String type = s[0];
                 String name = s[1];
+                Log.i("String name", s[1]);
                 imageList.put(name, resourceId);
             }
 
