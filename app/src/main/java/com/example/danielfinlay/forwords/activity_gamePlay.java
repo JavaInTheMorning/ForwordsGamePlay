@@ -1,5 +1,7 @@
 package com.example.danielfinlay.forwords;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -38,6 +41,9 @@ public class activity_gamePlay extends AppCompatActivity {
     int nextnotAnswer2 = 0;
     int nextnotAnswer3 = 0;
     boolean gameOver = false;
+    boolean incorrect = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,19 +134,45 @@ public class activity_gamePlay extends AppCompatActivity {
             btnbottomRightImage.setText(keys.get(currentanswer));
         }
 
-        loadBar();
+        //loadBar();
 
         //*******************END SET CURRENT ANSWER*****************
+
+        ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar);
+        final ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", 0, 100);
+        animation.setDuration(5000);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) { }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                //do something when the countdown is complete
+                proclaimGameOver();
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) { }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) { }
+        });
+        animation.start();
 
         btntopLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!gameOver) {
-                    if (currentanswerButton != 0)
-                        proclaimGameOver("Incorrect");
+                    if (currentanswerButton != 0){
+                        incorrect = true;
+                        animation.end();}
                     else {
-                        mProgressStatus[0] = 0;
-                        loadBar();
+                        //mProgressStatus[0] = 0;
+                        //loadBar();
+                        //animation.cancel();
+                        animation.start();
 
                         Random rand = new Random();
 
@@ -153,11 +185,14 @@ public class activity_gamePlay extends AppCompatActivity {
                         nextnotAnswer2 = rand.nextInt(values.size());
                         nextnotAnswer3 = rand.nextInt(values.size());
 
-                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                            nextanswer = rand.nextInt(values.size());
                             nextnotAnswer1 = rand.nextInt(values.size());
                             nextnotAnswer2 = rand.nextInt(values.size());
                             nextnotAnswer3 = rand.nextInt(values.size());
                         }
+
+                        currentanswer = nextanswer;
                         // Text 1
                         if (nextanswerButton == 0) {
                             image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
@@ -203,11 +238,14 @@ public class activity_gamePlay extends AppCompatActivity {
             public void onClick(View v) {
                 if(!gameOver) {
 
-                    if(currentanswerButton != 1)
-                        proclaimGameOver("Incorrect");
+                    if (currentanswerButton != 1){
+                        incorrect = true;
+                        animation.end();}
                     else{
-                    mProgressStatus[0] = 0;
-                    loadBar();
+                    //mProgressStatus[0] = 0;
+                    //loadBar();
+                        //animation.cancel();
+                        animation.start();
 
                     Random rand = new Random();
 
@@ -220,11 +258,13 @@ public class activity_gamePlay extends AppCompatActivity {
                     nextnotAnswer2 = rand.nextInt(values.size());
                     nextnotAnswer3 = rand.nextInt(values.size());
 
-                    while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                    while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                        nextanswer = rand.nextInt(values.size());
                         nextnotAnswer1 = rand.nextInt(values.size());
                         nextnotAnswer2 = rand.nextInt(values.size());
                         nextnotAnswer3 = rand.nextInt(values.size());
                     }
+                        currentanswer = nextanswer;
                     // Text 1
                     if (nextanswerButton == 0) {
                         image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
@@ -272,11 +312,14 @@ public class activity_gamePlay extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!gameOver) {
-                    if (currentanswerButton != 2)
-                        proclaimGameOver("Incorrect");
+                    if (currentanswerButton != 2){
+                        incorrect = true;
+                        animation.end();}
                     else {
-                        mProgressStatus[0] = 0;
-                        loadBar();
+                        //mProgressStatus[0] = 0;
+                        //loadBar();
+                        //animation.cancel();
+                        animation.start();
 
                         Random rand = new Random();
 
@@ -289,11 +332,14 @@ public class activity_gamePlay extends AppCompatActivity {
                         nextnotAnswer2 = rand.nextInt(values.size());
                         nextnotAnswer3 = rand.nextInt(values.size());
 
-                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                            nextanswer = rand.nextInt(values.size());
                             nextnotAnswer1 = rand.nextInt(values.size());
                             nextnotAnswer2 = rand.nextInt(values.size());
                             nextnotAnswer3 = rand.nextInt(values.size());
                         }
+
+                        currentanswer = nextanswer;
                         // Text 1
                         if (nextanswerButton == 0) {
                             image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
@@ -339,12 +385,15 @@ public class activity_gamePlay extends AppCompatActivity {
             public void onClick(View v) {
                 if(!gameOver) {
 
-                    if (currentanswerButton != 3)
-                        proclaimGameOver("Incorrect");
+                    if (currentanswerButton != 3){
+                        incorrect = true;
+                        animation.end();}
                     else {
 
-                        mProgressStatus[0] = 0;
-                        loadBar();
+                        //mProgressStatus[0] = 0;
+                        //loadBar();
+                        //animation.cancel();
+                        animation.start();
 
                         Random rand = new Random();
 
@@ -357,11 +406,14 @@ public class activity_gamePlay extends AppCompatActivity {
                         nextnotAnswer2 = rand.nextInt(values.size());
                         nextnotAnswer3 = rand.nextInt(values.size());
 
-                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+                            nextanswer = rand.nextInt(values.size());
                             nextnotAnswer1 = rand.nextInt(values.size());
                             nextnotAnswer2 = rand.nextInt(values.size());
                             nextnotAnswer3 = rand.nextInt(values.size());
                         }
+
+                        currentanswer = nextanswer;
                         // Text 1
                         if (nextanswerButton == 0) {
                             image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
@@ -405,53 +457,21 @@ public class activity_gamePlay extends AppCompatActivity {
 
     }
 
-    private void loadBar()
-    {
-
-        final TextView mLoadingText;
-
-        //final int[] mProgressStatus = {0};
-
-        final Handler mHandler = new Handler();
-
-        final ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mLoadingText = (TextView) findViewById(R.id.loadingCompleteTextView);
-        mLoadingText.setVisibility(View.INVISIBLE);
-        new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (mProgressStatus[0] < 1000) {
-                            mProgressStatus[0]++;
-                            android.os.SystemClock.sleep(100);
-                            mHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(gameOver)
-                                        mProgressBar.setProgress(101);
-                                    else
-                                    mProgressBar.setProgress(mProgressStatus[0]);
-                                }
-                            });
-                        }
 
 
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(!gameOver)
-                                proclaimGameOver("OUT OF TIME");
-
-                            }
-                        });
-                    }
-                }).start();
 
 
-    }
-    private void proclaimGameOver(String message)
+
+    private void proclaimGameOver()
     {
         final TextView mLoadingText = (TextView) findViewById(R.id.loadingCompleteTextView);
-        mLoadingText.setText(message);
+        mLoadingText.setText("Wasn't Set");
+
+        if(incorrect)
+        mLoadingText.setText("Incorrect");
+        else if(!incorrect)
+        mLoadingText.setText("Out Of Time");
+
         mLoadingText.setVisibility(View.VISIBLE);
         gameOver = true;
     }
