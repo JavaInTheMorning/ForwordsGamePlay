@@ -2,6 +2,7 @@ package com.example.danielfinlay.forwords;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +21,13 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,14 +57,45 @@ public class activity_gamePlay extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_play);
 
+        // Store english vocabulary linked to picture
+        final ArrayList<String> english = new ArrayList<String>();
+        // Store spanish vocabulary linked to picture
+        final ArrayList<String> spanish = new ArrayList<String>();
+        // Store chinese vocabulary linked to picture
+        final ArrayList<String> chinese = new ArrayList<String>();
+        // Store arabic vocabulary linked to picture
+        final ArrayList<String> arabic = new ArrayList<String>();
 
+
+        // For gettting pictures from drawable folder
         final Map<String,Integer> imageList = new HashMap<String,Integer>();
         final R.drawable drawableResources = new R.drawable();
         final Class<R.drawable> c = R.drawable.class;
         final Field[] fields = c.getDeclaredFields();
         gameOver = false;
 
+        // Read vocabulary from text file
+        BufferedReader reader;
 
+        try{
+            final InputStream file = getAssets().open("vocabulary.txt");
+            reader = new BufferedReader(new InputStreamReader(file));
+            String line = reader.readLine();
+            while(line != null){
+                // Split each line to english, corresponding spanish/chinese
+                String[] s = line.split("_");
+                english.add(s[0]);
+                spanish.add(s[1]);
+                chinese.add(s[2]);
+                arabic.add(s[3]);
+                //Log.d("Parsed", s[0] + " " + s[1] + " " + s[2]);
+                line = reader.readLine();
+            }
+        } catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+
+        // Traverse through all the fields in the drawable folder
         for (int i = 0, max = fields.length; i < max; i++) {
             final int resourceId;
             try {
@@ -65,12 +103,19 @@ public class activity_gamePlay extends AppCompatActivity {
             } catch (Exception e) {
                 continue;
             }
+            // If file endswith "_" then it's our picture
             if(fields[i].toString().endsWith("_")){
                 String[] s = fields[i].toString().split("_");
-                String type = s[0];
-                String name = s[1];
-                Log.i("String name", s[1]);
-                imageList.put(name, resourceId);
+                String engName = s[1];
+                int location = 0;
+                // If picture's english name has a corresponding vocab in text file
+                // then there are corresponding translations for every other language we add
+                if(english.contains(engName))
+                    location = english.indexOf(engName); // Save location of word for fetching other languages
+                //Log.i("String name", s[1]);
+                // TODO: add a button/radiobutton to select which language to do, and then accordingly
+                // call "language.get(location)" & everything else will be taken care to display the language.
+                imageList.put(arabic.get(location), resourceId);
             }
 
         }

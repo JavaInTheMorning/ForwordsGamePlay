@@ -20,4 +20,5 @@
     </string>
     <string name="action_help">HELP</string>
     <string name="action_about">ABOUT</string>
+    <string name="title_activity_settings">settings</string>
 </resources>

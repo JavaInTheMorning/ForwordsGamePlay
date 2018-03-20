@@ -15,34 +15,31 @@
         android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:layout_weight="266"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingLeft="100dp"
-        android:paddingRight="100dp"
-        android:weightSum="10">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
         <Button
             android:id="@+id/topLeftImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_gravity="left"
-            android:layout_weight="5"
+            android:layout_centerVertical="true"
             android:background="@drawable/round_button"
-            android:text="Bannana"></Button>
+            android:paddingLeft="10dp"
+            android:text="Bannana"
+            android:textAlignment="center"></Button>
 
         <Button
             android:id="@+id/topRightImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/topLeftImage"
-            android:layout_alignBottom="@+id/topLeftImage"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="right"
-            android:layout_weight="5"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/round_button"
-            android:text="Cherry"></Button>
-
+            android:paddingRight="10dp"
+            android:text="Cherry"
+            android:textAlignment="center"></Button>
 
     </RelativeLayout>
 
@@ -51,7 +48,6 @@
         android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:layout_weight="266"
-        android:gravity="center"
         android:orientation="vertical"
         android:paddingLeft="100dp"
         android:paddingRight="100dp">
@@ -61,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/fruit_banana_platano_"></ImageView>
+            android:background="@drawable/fruit_banana_clipped_"></ImageView>
 
     </RelativeLayout>
 
@@ -70,65 +66,65 @@
         android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:layout_weight="266"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingLeft="100dp"
-        android:paddingRight="100dp"
-        android:weightSum="10">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
         <Button
             android:id="@+id/bottomLeftImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/round_button"
-            android:layout_gravity="left"
-            android:layout_weight="5"
-            android:text="apple"></Button>
+            android:paddingLeft="10dp"
+            android:text="apple"
+            android:textAlignment="center"></Button>
 
         <Button
             android:id="@+id/bottomRightImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/round_button"
-            android:layout_gravity="right"
-            android:layout_weight="5"
-            android:text="grape"></Button>
+            android:paddingRight="10dp"
+            android:text="grape"
+            android:textAlignment="center"></Button>
 
 
     </RelativeLayout>
 
-<RelativeLayout
-    android:layout_width="fill_parent"
-    android:layout_height="0dp"
-    android:layout_gravity="bottom"
-    android:layout_weight="200"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="100dp"
-    android:paddingRight="100dp"
-    android:weightSum="10">
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_weight="5"
-        android:layout_margin="10dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        />
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="200"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp"
+        android:weightSum="10">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_weight="5"
+            android:layout_margin="10dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
-    <TextView
-        android:id="@+id/loadingCompleteTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/progressBar"
-        android:layout_centerHorizontal="true"
-        android:layout_weight="5"
-        android:text="Out Of Time"
-        android:textSize="24sp"
-        android:visibility="invisible" />
-</RelativeLayout>
+        <TextView
+            android:id="@+id/loadingCompleteTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressBar"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="50"
+            android:text="Out Of Time"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
 </LinearLayout>

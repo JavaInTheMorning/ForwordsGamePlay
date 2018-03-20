@@ -14,7 +14,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
@@ -24,7 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:label="MainActivity"
@@ -33,10 +31,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.danielfinlay.forwords.LoginActivity" />
-
         </activity>
-
-
         <activity
             android:name=".activity_gamePlay"
             android:label="@string/title_activity_game_play"
@@ -46,7 +41,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.danielfinlay.forwords.MainActivity" />
         </activity>
-        <activity android:name=".SignUp"></activity>
+        <activity android:name=".SignUp" />
+        <activity
+            android:name=".settings"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.danielfinlay.forwords.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
