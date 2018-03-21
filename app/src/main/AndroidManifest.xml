@@ -43,7 +43,7 @@
         </activity>
         <activity android:name=".SignUp" />
         <activity
-            android:name=".settings"
+            android:name=".Settings"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

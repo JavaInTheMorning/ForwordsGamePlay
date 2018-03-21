@@ -30,14 +30,23 @@ public class MainActivity extends AppCompatActivity {
         //Button btnStore = findViewById(R.id.Store);
         //Button btnSettings = findViewById(R.id.Settings);
 
-        findViewById(R.id.playButton).setOnClickListener(new handleButton());
+        findViewById(R.id.playButton).setOnClickListener(new handlePlayButton());
+        findViewById(R.id.Settings).setOnClickListener(new handleSettingsButton());
     }
 
-    class handleButton implements View.OnClickListener {
+    class handlePlayButton implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, activity_gamePlay.class);
                 startActivity(intent);
             }
+
+    }
+
+    class handleSettingsButton implements View.OnClickListener {
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, Settings.class);
+            startActivity(intent);
+        }
 
     }
 

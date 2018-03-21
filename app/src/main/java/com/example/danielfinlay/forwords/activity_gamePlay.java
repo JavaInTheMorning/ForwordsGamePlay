@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.danielfinlay.forwords.Model.LanguageChoosen;
+
 import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
@@ -50,6 +52,7 @@ public class activity_gamePlay extends AppCompatActivity {
     int nextnotAnswer3 = 0;
     boolean gameOver = false;
     boolean incorrect = false;
+    String languageChoosen = LanguageChoosen.getInstance().getLanguage();
 
 
     @Override
@@ -65,6 +68,8 @@ public class activity_gamePlay extends AppCompatActivity {
         final ArrayList<String> chinese = new ArrayList<String>();
         // Store arabic vocabulary linked to picture
         final ArrayList<String> arabic = new ArrayList<String>();
+        // Store hungarian vocabulary linked to picture
+        final ArrayList<String> hungarian = new ArrayList<String>();
 
 
         // For gettting pictures from drawable folder
@@ -88,6 +93,7 @@ public class activity_gamePlay extends AppCompatActivity {
                 spanish.add(s[1]);
                 chinese.add(s[2]);
                 arabic.add(s[3]);
+                hungarian.add(s[4]);
                 //Log.d("Parsed", s[0] + " " + s[1] + " " + s[2]);
                 line = reader.readLine();
             }
@@ -113,9 +119,16 @@ public class activity_gamePlay extends AppCompatActivity {
                 if(english.contains(engName))
                     location = english.indexOf(engName); // Save location of word for fetching other languages
                 //Log.i("String name", s[1]);
-                // TODO: add a button/radiobutton to select which language to do, and then accordingly
-                // call "language.get(location)" & everything else will be taken care to display the language.
-                imageList.put(arabic.get(location), resourceId);
+                if(languageChoosen.equalsIgnoreCase("english"))
+                imageList.put(english.get(location), resourceId);
+                else if(languageChoosen.equalsIgnoreCase("spanish"))
+                    imageList.put(spanish.get(location), resourceId);
+                else if(languageChoosen.equalsIgnoreCase("chinese"))
+                    imageList.put(chinese.get(location), resourceId);
+                else if(languageChoosen.equalsIgnoreCase("arabic"))
+                    imageList.put(arabic.get(location), resourceId);
+                else if(languageChoosen.equalsIgnoreCase("hungarian"))
+                    imageList.put(hungarian.get(location),resourceId);
             }
 
         }
