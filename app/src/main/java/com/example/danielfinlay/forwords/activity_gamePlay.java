@@ -3,6 +3,10 @@ package com.example.danielfinlay.forwords;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -30,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +43,8 @@ import java.util.Map;
 import java.util.Random;
 
 public class activity_gamePlay extends AppCompatActivity {
-    final int[] mProgressStatus = {0};
+
+    // Declare global variables so they're accessible everywhere
     int currentanswerButton = 0;
     int currentanswer = 0;
     int currentnotAnswer1 = 0;
@@ -52,34 +58,82 @@ public class activity_gamePlay extends AppCompatActivity {
     int nextnotAnswer3 = 0;
     boolean gameOver = false;
     boolean incorrect = false;
+
+    // For storing which language radio button has currently been selected
     String languageChoosen = LanguageChoosen.getInstance().getLanguage();
 
+    ArrayList<Integer> values = null;
+    ArrayList<String> keys = null;
 
+    // As more languages are added, declare more arraylists here
+    ArrayList<String> english = null;
+    ArrayList<String> spanish = null;
+    ArrayList<String> chinese = null;
+    ArrayList<String> arabic = null;
+    ArrayList<String> hungarian = null;
+
+    ObjectAnimator animation = null;
+    Button btntopLeftImage = null;
+    Button btntopRightImage = null;
+    Button btnbottomLeftImage = null;
+    Button btnbottomRightImage = null;
+    Button btnReset = null;
+    ImageView image = null;
+    TextView mLoadingText = null;
+    Random rand;
+
+
+
+    // Execute this code when screen loads
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize super class
         super.onCreate(savedInstanceState);
+
+        // Set context to proper .xml layout
         setContentView(R.layout.activity_game_play);
 
-        // Store english vocabulary linked to picture
-        final ArrayList<String> english = new ArrayList<String>();
-        // Store spanish vocabulary linked to picture
-        final ArrayList<String> spanish = new ArrayList<String>();
-        // Store chinese vocabulary linked to picture
-        final ArrayList<String> chinese = new ArrayList<String>();
-        // Store arabic vocabulary linked to picture
-        final ArrayList<String> arabic = new ArrayList<String>();
-        // Store hungarian vocabulary linked to picture
-        final ArrayList<String> hungarian = new ArrayList<String>();
+        // Set GUI objects equal to their .xml elements
+        btntopLeftImage = findViewById(R.id.topLeftImage);
+        btntopRightImage = findViewById(R.id.topRightImage);
+        btnbottomLeftImage = findViewById(R.id.bottomLeftImage);
+        btnbottomRightImage = findViewById(R.id.bottomRightImage);
+        btnReset = findViewById(R.id.resetButton);
+        image = findViewById(R.id.mainImage);
+        mLoadingText = (TextView) findViewById(R.id.loadingCompleteTextView);
 
 
-        // For gettting pictures from drawable folder
+        // For Storing english vocabulary linked to picture
+        english = new ArrayList<String>();
+
+        // For Storing spanish vocabulary linked to picture
+        spanish = new ArrayList<String>();
+
+        // For Storing chinese vocabulary linked to picture
+        chinese = new ArrayList<String>();
+
+        // For Storing arabic vocabulary linked to picture
+        arabic = new ArrayList<String>();
+
+        // For Storing hungarian vocabulary linked to picture
+        hungarian = new ArrayList<String>();
+
+        // PUT MORE LANGUAGES HERE
+        // TODO: WRITE new languages here
+
+        // Variables for gettting pictures from drawable folder
         final Map<String,Integer> imageList = new HashMap<String,Integer>();
         final R.drawable drawableResources = new R.drawable();
         final Class<R.drawable> c = R.drawable.class;
         final Field[] fields = c.getDeclaredFields();
+
+
+        // On create initialize Gameover to false
         gameOver = false;
 
-        // Read vocabulary from text file
+
+
+        // ***********************Read vocabulary from text file*******************************
         BufferedReader reader;
 
         try{
@@ -89,41 +143,63 @@ public class activity_gamePlay extends AppCompatActivity {
             while(line != null){
                 // Split each line to english, corresponding spanish/chinese
                 String[] s = line.split("_");
+
+                // Store eng/spn/chn/arab/hung/etc vocab into corresponding arraylists in text file vocabulary.txt found in assets folder
                 english.add(s[0]);
-                //Log.i("English.add(s[0]", english.get(english.indexOf(s[0])) + "At index: " + Integer.toString(english.indexOf(s[0])));
                 spanish.add(s[1]);
                 chinese.add(s[2]);
                 arabic.add(s[3]);
                 hungarian.add(s[4]);
-                //Log.d("Parsed", s[0] + " " + s[1] + " " + s[2]);
+                // PUT MORE LANGUAGES HERE****
+                // TODO: Put more languages here
+
+                //Read the next line until end of file
                 line = reader.readLine();
             }
         } catch(IOException ioe){
             ioe.printStackTrace();
         }
 
-        // Traverse through all the fields in the drawable folder
+        //***********************END READ VOCABULARY FROM TEXT FILE*********************************
+
+
+
+        //************************TRAVERSE THROUGH ALL OF THE FILES IN THE DRAWABLE FOLDER AND STORE ONLY THE PICTURES WITH THEIR CORRECT TRANSLATIONS IN A HASHMAP******************
         for (int i = 0, max = fields.length; i < max; i++) {
+            // For storing the corresponding integer value that matches the pictures in the drawable folder
             final int resourceId;
+
             try {
                 resourceId = fields[i].getInt(drawableResources);
             } catch (Exception e) {
                 continue;
             }
+
             // If file endswith "_" then it's our picture
             if(fields[i].toString().endsWith("_")){
-                //Log.i("Fields[i].toString()", fields[i].toString());
+
+                // Split into:
+                // s[0] = category
+                // s[1] = english word
+                // s[2] = spanish(Unecessary now since vocab is stored in text file)
                 String[] s = fields[i].toString().split("_");
+
+                // Get english translation from file name
                 String engName = s[1];
-                //Log.i("EngName: ", s[1]);
+
+                // int for storing location picture's eng translation is found in text file arrayLists
                 int location = 0;
+
                 // If picture's english name has a corresponding vocab in text file
                 // then there are corresponding translations for every other language we add
                 if(english.contains(engName)) {
-                    location = english.indexOf(engName); // Save location of word for fetching other languages
-                    //Log.i("eng.con("+engName+"):Location:", Integer.toString(location) );
+                    // Save location of word for fetching other languages
+                    location = english.indexOf(engName);
+
                 }
-                //Log.i("String name", s[1]);
+
+                // Now use the LanguageChoosen singleton class, which has stored the radio button of the target language desired
+                //Store the translation of the language desired with matchin picture
                 if(languageChoosen.equalsIgnoreCase("english"))
                 imageList.put(english.get(location), resourceId);
                 else if(languageChoosen.equalsIgnoreCase("spanish"))
@@ -134,390 +210,209 @@ public class activity_gamePlay extends AppCompatActivity {
                     imageList.put(arabic.get(location), resourceId);
                 else if(languageChoosen.equalsIgnoreCase("hungarian"))
                     imageList.put(hungarian.get(location),resourceId);
+                // TODO: Put more else if statements here to add more languages
+                // Final "To do" to add another language(Besides in LanguageChoosen.java and activity_settings.xml)
             }
 
         }
 
-        final ArrayList<Integer> values = new ArrayList<Integer>(imageList.values());
-        final ArrayList<String> keys = new ArrayList<String>(imageList.keySet());
-
-        final Button btntopLeftImage = findViewById(R.id.topLeftImage);
-        final Button btntopRightImage = findViewById(R.id.topRightImage);
-        final Button btnbottomLeftImage = findViewById(R.id.bottomLeftImage);
-        final Button btnbottomRightImage = findViewById(R.id.bottomRightImage);
-        final ImageView image = findViewById(R.id.mainImage);
+        // ***********************END TRAVERSE THROUGH ALL OF THE FILES IN THE DRAWABLE FOLDER*******************************
 
 
-        // *****SET CURRENT ANSWER/PICTURES*****************
-        Random rand = new Random();
 
-        currentanswerButton = rand.nextInt(4);
+        // Initialize the ResourceID values from image list into an arraylist called Values for easier access
+        values = new ArrayList<Integer>(imageList.values());
+        // Initialize corresponding String name in keys Arraylist
+        keys = new ArrayList<String>(imageList.keySet());
 
-        currentanswer = rand.nextInt(values.size());
-        currentnotAnswer1 = rand.nextInt(values.size());
-        currentnotAnswer2= rand.nextInt(values.size());
-        currentnotAnswer3 = rand.nextInt(values.size());
+        // Initialize The starting picture and text options
+        initializeAnswers();
 
-        while ((currentanswer == currentnotAnswer1 || currentanswer == currentnotAnswer2 || currentanswer == currentnotAnswer3) || (currentnotAnswer1 == currentnotAnswer2 || currentnotAnswer1 == currentnotAnswer3) || (currentnotAnswer2== currentnotAnswer3)) {
-            currentnotAnswer1 = rand.nextInt(values.size());
-            currentnotAnswer2 = rand.nextInt(values.size());
-            currentnotAnswer3 = rand.nextInt(values.size());
-        }
-        // Text 1
-        if (currentanswerButton == 0) {
-            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
-            btntopLeftImage.setText(keys.get(currentanswer));
-            btntopRightImage.setText(keys.get(currentnotAnswer1));
-            btnbottomLeftImage.setText(keys.get(currentnotAnswer2));
-            btnbottomRightImage.setText(keys.get(currentnotAnswer3));
 
-        }
-
-        // Text 2
-        if (currentanswerButton== 1) {
-            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
-            btntopLeftImage.setText(keys.get(currentnotAnswer1));
-            btntopRightImage.setText(keys.get(currentanswer));
-            btnbottomLeftImage.setText(keys.get(currentnotAnswer2));
-            btnbottomRightImage.setText(keys.get(currentnotAnswer3));
-        }
-
-        //Text 3
-        if (currentanswerButton == 2) {
-            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
-            btntopLeftImage.setText(keys.get(currentnotAnswer1));
-            btntopRightImage.setText(keys.get(currentnotAnswer2));
-            btnbottomLeftImage.setText(keys.get(currentanswer));
-            btnbottomRightImage.setText(keys.get(currentnotAnswer3));
-        }
-
-        //Text 4
-        if (currentanswerButton == 3) {
-            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
-            btntopLeftImage.setText(keys.get(currentnotAnswer1));
-            btntopRightImage.setText(keys.get(currentnotAnswer2));
-            btnbottomLeftImage.setText(keys.get(currentnotAnswer3));
-            btnbottomRightImage.setText(keys.get(currentanswer));
-        }
-
-        //loadBar();
-
-        //*******************END SET CURRENT ANSWER*****************
-
+        // CODE FOR PROGRESS BAR START*********************************
         ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar);
-        final ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", 0, 100);
+        animation = ObjectAnimator.ofInt(pb, "progress", 0, 100);
+
+        // Let clock run for 5 seconds(5000 milliseconds)
         animation.setDuration(5000);
         animation.setInterpolator(new DecelerateInterpolator());
         animation.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) { }
+            public void onAnimationStart(Animator animator) {
+                //Write what you want to happen when the animation starts here
+            }
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                //do something when the countdown is complete
+                //Declare game over when the countdown is complete
                 proclaimGameOver();
 
             }
 
             @Override
-            public void onAnimationCancel(Animator animator) { }
+            public void onAnimationCancel(Animator animator) {
+                // Do something if the animation is cancelled
+            }
 
             @Override
             public void onAnimationRepeat(Animator animator) { }
         });
+
+
+
+        // Start the animation as soon as the GamePlay xml screen loads
         animation.start();
+
+        // CODE FOR PROGRESS BAR END*********************************
+
+
+        // When btnReset is clicked
+        btnReset.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+
+                // When the game is reset, it is no longer a gameover
+                gameOver = false;
+
+                // When the game is reset, make the reset button invisible
+                btnReset.setVisibility(View.INVISIBLE);
+
+                // Re-initialize the answers when the game is reset
+                initializeAnswers();
+
+                // Make sure that all of the buttons are default round buttons, instead of correct answer buttons on reset
+                btntopLeftImage.setBackgroundResource(R.drawable.round_button);
+                btntopRightImage.setBackgroundResource(R.drawable.round_button);
+                btnbottomLeftImage.setBackgroundResource(R.drawable.round_button);
+                btnbottomRightImage.setBackgroundResource(R.drawable.round_button);
+
+                // Set the "GAME OVER"/"INCORRECT" text below the progress bar to be invisible
+                mLoadingText.setVisibility(View.INVISIBLE);
+
+                // Start the animation back up
+                animation.start();
+
+            }
+
+        });
 
         btntopLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!gameOver) {
+                    // CurrentanswerButton has stored which button number has the correct answer
+                    // btntopLeftImage == 0
+                    // btntopRightImage == 1
+                    // btnbottomLeftImage == 2
+                    // btnbottomRightImage == 3
+                    // So if currentAnswerButton != 0, & they selected btntopleftImage -> set game over(because they selected the wrong button)
                     if (currentanswerButton != 0){
+
+                        // Then since the wrong answer was choosen, change the correct answer text box to the round_button_answer to highlight correct answer(declared in drawable folder,color is blue...lol)
+                        if(currentanswerButton == 1)
+                            btntopRightImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 2)
+                            btnbottomLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 3)
+                            btnbottomRightImage.setBackgroundResource(R.drawable.round_button_answer);
+
+                        // Declare that the incorrect option was selected
                         incorrect = true;
-                        animation.end();}
+
+                        // End the animation
+                        // This method calls ProclaimGameOver() -> public void onAnimationEnd(Animator animator) listed above^
+                        animation.end();
+                    }
+
+                    // Otherwise continue gameplay
                     else {
-                        //mProgressStatus[0] = 0;
-                        //loadBar();
-                        //animation.cancel();
-                        animation.start();
-
-                        Random rand = new Random();
-
-
-                        nextanswerButton = rand.nextInt(4);
-                        currentanswerButton = nextanswerButton;
-
-                        nextanswer = rand.nextInt(values.size());
-                        nextnotAnswer1 = rand.nextInt(values.size());
-                        nextnotAnswer2 = rand.nextInt(values.size());
-                        nextnotAnswer3 = rand.nextInt(values.size());
-
-                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
-                            nextanswer = rand.nextInt(values.size());
-                            nextnotAnswer1 = rand.nextInt(values.size());
-                            nextnotAnswer2 = rand.nextInt(values.size());
-                            nextnotAnswer3 = rand.nextInt(values.size());
-                        }
-
-                        currentanswer = nextanswer;
-                        // Text 1
-                        if (nextanswerButton == 0) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextanswer));
-                            btntopRightImage.setText(keys.get(nextnotAnswer1));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-
-                        }
-
-                        // Text 2
-                        if (nextanswerButton == 1) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextanswer));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-
-                        }
-
-                        //Text 3
-                        if (nextanswerButton == 2) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomLeftImage.setText(keys.get(nextanswer));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-
-                        }
-
-                        //Text 4
-                        if (nextanswerButton == 3) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer3));
-                            btnbottomRightImage.setText(keys.get(nextanswer));
-                        }
+                        // Set the new options/picture for the next question if it's not a game over & the correct button was selected
+                        // btntopLeftImage == 0
+                        // btntopRightImage == 1
+                        // btnbottomLeftImage == 2
+                        // btnbottomRightImage == 3
+                        setOptions();
                     }
                 }
             }
         });
 
+        // SAME COMMENTS/Conept AS btnTopLeftImage
         btntopRightImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!gameOver) {
 
                     if (currentanswerButton != 1){
+                        if(currentanswerButton == 0)
+                            btntopLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 2)
+                            btnbottomLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 3)
+                            btnbottomRightImage.setBackgroundResource(R.drawable.round_button_answer);
                         incorrect = true;
                         animation.end();}
                     else{
-                    //mProgressStatus[0] = 0;
-                    //loadBar();
-                        //animation.cancel();
-                        animation.start();
-
-                    Random rand = new Random();
-
-
-                    int nextanswerButton = rand.nextInt(4);
-                    currentanswerButton = nextanswerButton;
-
-                    nextanswer = rand.nextInt(values.size());
-                    nextnotAnswer1 = rand.nextInt(values.size());
-                    nextnotAnswer2 = rand.nextInt(values.size());
-                    nextnotAnswer3 = rand.nextInt(values.size());
-
-                    while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
-                        nextanswer = rand.nextInt(values.size());
-                        nextnotAnswer1 = rand.nextInt(values.size());
-                        nextnotAnswer2 = rand.nextInt(values.size());
-                        nextnotAnswer3 = rand.nextInt(values.size());
-                    }
-                        currentanswer = nextanswer;
-                    // Text 1
-                    if (nextanswerButton == 0) {
-                        image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                        btntopLeftImage.setText(keys.get(nextanswer));
-                        btntopRightImage.setText(keys.get(nextnotAnswer1));
-                        btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                        btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                    }
-
-                    // Text 2
-                    if (nextanswerButton == 1) {
-                        image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                        btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                        btntopRightImage.setText(keys.get(nextanswer));
-                        btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                        btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                    }
-
-                    //Text 3
-                    if (nextanswerButton == 2) {
-                        image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                        btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                        btntopRightImage.setText(keys.get(nextnotAnswer2));
-                        btnbottomLeftImage.setText(keys.get(nextanswer));
-                        btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                    }
-
-                    //Text 4
-                    if (nextanswerButton == 3) {
-                        image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                        btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                        btntopRightImage.setText(keys.get(nextnotAnswer2));
-                        btnbottomLeftImage.setText(keys.get(nextnotAnswer3));
-                        btnbottomRightImage.setText(keys.get(nextanswer));
-
-                    }
-
+                        // Set the new options/picture for the next question if it's not a game over & the correct button was selected
+                        // btntopLeftImage == 0
+                        // btntopRightImage == 1
+                        // btnbottomLeftImage == 2
+                        // btnbottomRightImage == 3
+                        setOptions();
                     }
                 }
 
             }
         });
 
+        // SAME COMMENTS/Concept AS btnTopLeftImage
         btnbottomLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!gameOver) {
                     if (currentanswerButton != 2){
+                        if(currentanswerButton == 0)
+                            btntopLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 1)
+                            btntopRightImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 3)
+                            btnbottomRightImage.setBackgroundResource(R.drawable.round_button_answer);
                         incorrect = true;
                         animation.end();}
                     else {
-                        //mProgressStatus[0] = 0;
-                        //loadBar();
-                        //animation.cancel();
-                        animation.start();
-
-                        Random rand = new Random();
-
-
-                        nextanswerButton = rand.nextInt(4);
-                        currentanswerButton = nextanswerButton;
-
-                        nextanswer = rand.nextInt(values.size());
-                        nextnotAnswer1 = rand.nextInt(values.size());
-                        nextnotAnswer2 = rand.nextInt(values.size());
-                        nextnotAnswer3 = rand.nextInt(values.size());
-
-                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
-                            nextanswer = rand.nextInt(values.size());
-                            nextnotAnswer1 = rand.nextInt(values.size());
-                            nextnotAnswer2 = rand.nextInt(values.size());
-                            nextnotAnswer3 = rand.nextInt(values.size());
-                        }
-
-                        currentanswer = nextanswer;
-                        // Text 1
-                        if (nextanswerButton == 0) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextanswer));
-                            btntopRightImage.setText(keys.get(nextnotAnswer1));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                        }
-
-                        // Text 2
-                        if (nextanswerButton == 1) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextanswer));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                        }
-
-                        //Text 3
-                        if (nextanswerButton == 2) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomLeftImage.setText(keys.get(nextanswer));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                        }
-
-                        //Text 4
-                        if (nextanswerButton == 3) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer3));
-                            btnbottomRightImage.setText(keys.get(nextanswer));
-                        }
+                        // Set the new options/picture for the next question if it's not a game over & the correct button was selected
+                        // btntopLeftImage == 0
+                        // btntopRightImage == 1
+                        // btnbottomLeftImage == 2
+                        // btnbottomRightImage == 3
+                        setOptions();
                     }
                 }
             }
         });
 
+        // SAME COMMENTS/Concept AS btnTopLeftImage
         btnbottomRightImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!gameOver) {
 
                     if (currentanswerButton != 3){
+                        if(currentanswerButton == 0)
+                            btntopLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 1)
+                            btntopRightImage.setBackgroundResource(R.drawable.round_button_answer);
+                        else if(currentanswerButton == 2)
+                            btnbottomLeftImage.setBackgroundResource(R.drawable.round_button_answer);
                         incorrect = true;
                         animation.end();}
-                    else {
-
-                        //mProgressStatus[0] = 0;
-                        //loadBar();
-                        //animation.cancel();
-                        animation.start();
-
-                        Random rand = new Random();
-
-
-                        nextanswerButton = rand.nextInt(4);
-                        currentanswerButton = nextanswerButton;
-
-                        nextanswer = rand.nextInt(values.size());
-                        nextnotAnswer1 = rand.nextInt(values.size());
-                        nextnotAnswer2 = rand.nextInt(values.size());
-                        nextnotAnswer3 = rand.nextInt(values.size());
-
-                        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
-                            nextanswer = rand.nextInt(values.size());
-                            nextnotAnswer1 = rand.nextInt(values.size());
-                            nextnotAnswer2 = rand.nextInt(values.size());
-                            nextnotAnswer3 = rand.nextInt(values.size());
-                        }
-
-                        currentanswer = nextanswer;
-                        // Text 1
-                        if (nextanswerButton == 0) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextanswer));
-                            btntopRightImage.setText(keys.get(nextnotAnswer1));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                        }
-
-                        // Text 2
-                        if (nextanswerButton == 1) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextanswer));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                        }
-
-                        //Text 3
-                        if (nextanswerButton == 2) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomLeftImage.setText(keys.get(nextanswer));
-                            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
-                        }
-
-                        //Text 4
-                        if (nextanswerButton == 3) {
-                            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
-                            btntopLeftImage.setText(keys.get(nextnotAnswer1));
-                            btntopRightImage.setText(keys.get(nextnotAnswer2));
-                            btnbottomLeftImage.setText(keys.get(nextnotAnswer3));
-                            btnbottomRightImage.setText(keys.get(nextanswer));
-                        }
+                    else
+                    {
+                        // Set the new options/picture for the next question if it's not a game over & the correct button was selected
+                        // btntopLeftImage == 0
+                        // btntopRightImage == 1
+                        // btnbottomLeftImage == 2
+                        // btnbottomRightImage == 3
+                        setOptions();
                     }
                 }
             }
@@ -527,21 +422,154 @@ public class activity_gamePlay extends AppCompatActivity {
     }
 
 
+    // Method for initializing answers, called in onCreate() & Reset
+    private void initializeAnswers(){
+        // Declare a random variable for randomly changing between pictures & random text options
+        rand = new Random();
+
+        // Set currentanswerbutton to be between 0-3, that way the button storing the correct answer is randomized, but we have 0-3 directly map to each button for deciding which button is correct
+        // btntopLeftImage == 0
+        // btntopRightImage == 1
+        // btnbottomLeftImage == 2
+        // btnbottomRightImage == 3
+        currentanswerButton = rand.nextInt(4);
+
+        // Randomly select a picture's abstracted integer value from the values array and set it to the current answer, then get 3 other values that are incorrect
+        currentanswer = rand.nextInt(values.size());
+        currentnotAnswer1 = rand.nextInt(values.size());
+        currentnotAnswer2= rand.nextInt(values.size());
+        currentnotAnswer3 = rand.nextInt(values.size());
+
+        // Keep picking new options until none of them are the same to avoid duplicate options
+        while ((currentanswer == currentnotAnswer1 || currentanswer == currentnotAnswer2 || currentanswer == currentnotAnswer3) || (currentnotAnswer1 == currentnotAnswer2 || currentnotAnswer1 == currentnotAnswer3) || (currentnotAnswer2== currentnotAnswer3)) {
+            currentnotAnswer1 = rand.nextInt(values.size());
+            currentnotAnswer2 = rand.nextInt(values.size());
+            currentnotAnswer3 = rand.nextInt(values.size());
+        }
+
+        // Now Determine which button has the correct answer stored in it from the randomly generated int "currentanswerButton"
+        // Button 1
+        if (currentanswerButton == 0) {
+            // Once determined set the center of the screen's image background to be the picture that is stored in the values arraylist at index "currentanswer"
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
+            // Then set the corresponding button's text to be the correct/or incorrect options accordingly
+            btntopLeftImage.setText(keys.get(currentanswer));
+            btntopRightImage.setText(keys.get(currentnotAnswer1));
+            btnbottomLeftImage.setText(keys.get(currentnotAnswer2));
+            btnbottomRightImage.setText(keys.get(currentnotAnswer3));
+
+        }
+        // Same concept as Button 1
+        // Button 2
+        if (currentanswerButton== 1) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
+            btntopLeftImage.setText(keys.get(currentnotAnswer1));
+            btntopRightImage.setText(keys.get(currentanswer));
+            btnbottomLeftImage.setText(keys.get(currentnotAnswer2));
+            btnbottomRightImage.setText(keys.get(currentnotAnswer3));
+        }
+
+        // Same concept as Button 1
+        // Button 3
+        if (currentanswerButton == 2) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
+            btntopLeftImage.setText(keys.get(currentnotAnswer1));
+            btntopRightImage.setText(keys.get(currentnotAnswer2));
+            btnbottomLeftImage.setText(keys.get(currentanswer));
+            btnbottomRightImage.setText(keys.get(currentnotAnswer3));
+        }
+
+        // Same concept as Button 1
+        // Button 4
+        if (currentanswerButton == 3) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(currentanswer)));
+            btntopLeftImage.setText(keys.get(currentnotAnswer1));
+            btntopRightImage.setText(keys.get(currentnotAnswer2));
+            btnbottomLeftImage.setText(keys.get(currentnotAnswer3));
+            btnbottomRightImage.setText(keys.get(currentanswer));
+        }
+
+    }
+
+    // Same concept as initializeAnswers but used for getting the nextAnswer ready, also calls animation.start to reset the timer(since the correct answer was selected)
+    private void setOptions()
+    {
+        animation.start();
+
+        Random rand = new Random();
+
+
+        nextanswerButton = rand.nextInt(4);
+        currentanswerButton = nextanswerButton;
+
+        nextanswer = rand.nextInt(values.size());
+        nextnotAnswer1 = rand.nextInt(values.size());
+        nextnotAnswer2 = rand.nextInt(values.size());
+        nextnotAnswer3 = rand.nextInt(values.size());
+
+        while ((nextanswer == nextnotAnswer1 || nextanswer == nextnotAnswer2 || nextanswer == nextnotAnswer3 || nextanswer == currentanswer) || (nextnotAnswer1 == nextnotAnswer2 || nextnotAnswer1 == nextnotAnswer3) || (nextnotAnswer2 == nextnotAnswer3)) {
+            nextanswer = rand.nextInt(values.size());
+            nextnotAnswer1 = rand.nextInt(values.size());
+            nextnotAnswer2 = rand.nextInt(values.size());
+            nextnotAnswer3 = rand.nextInt(values.size());
+        }
+
+        currentanswer = nextanswer;
+        // Text 1
+        if (nextanswerButton == 0) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
+            btntopLeftImage.setText(keys.get(nextanswer));
+            btntopRightImage.setText(keys.get(nextnotAnswer1));
+            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
+            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
+        }
+
+        // Text 2
+        if (nextanswerButton == 1) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
+            btntopLeftImage.setText(keys.get(nextnotAnswer1));
+            btntopRightImage.setText(keys.get(nextanswer));
+            btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
+            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
+        }
+
+        //Text 3
+        if (nextanswerButton == 2) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
+            btntopLeftImage.setText(keys.get(nextnotAnswer1));
+            btntopRightImage.setText(keys.get(nextnotAnswer2));
+            btnbottomLeftImage.setText(keys.get(nextanswer));
+            btnbottomRightImage.setText(keys.get(nextnotAnswer3));
+        }
+
+        //Text 4
+        if (nextanswerButton == 3) {
+            image.setBackground(ContextCompat.getDrawable(activity_gamePlay.this, values.get(nextanswer)));
+            btntopLeftImage.setText(keys.get(nextnotAnswer1));
+            btntopRightImage.setText(keys.get(nextnotAnswer2));
+            btnbottomLeftImage.setText(keys.get(nextnotAnswer3));
+            btnbottomRightImage.setText(keys.get(nextanswer));
+        }
+    }
 
 
 
-
+    // Called in animation.end()
+    // Set's the text to either "Out of time" or "Incorrect" depending on which one occurred
     private void proclaimGameOver()
     {
-        final TextView mLoadingText = (TextView) findViewById(R.id.loadingCompleteTextView);
-        mLoadingText.setText("Wasn't Set");
-
         if(incorrect)
         mLoadingText.setText("Incorrect");
         else if(!incorrect)
         mLoadingText.setText("Out Of Time");
 
+        // Once proper text determined make the text visible
         mLoadingText.setVisibility(View.VISIBLE);
+
+        // since it's a game over make the reset button visible, so it's Onclick method can be called
+        btnReset.setVisibility(View.VISIBLE);
+
+        // Set gameOver to true so none of the buttons will do anything until reset button is clicked(and its set back to false)
         gameOver = true;
     }
 

@@ -19,6 +19,7 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        // Get language selected from radio button
         chooseLanguage = (RadioGroup) findViewById(R.id.chooseLanguage);
 
         chooseLanguage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -26,6 +27,7 @@ public class Settings extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = (RadioButton) chooseLanguage.findViewById(i);
 
+                // Set the model's singleton class to store the language chosen by the radio button in user settings
                 switch (rb.getId())
                 {
                     case R.id.english:
