@@ -90,6 +90,7 @@ public class activity_gamePlay extends AppCompatActivity {
                 // Split each line to english, corresponding spanish/chinese
                 String[] s = line.split("_");
                 english.add(s[0]);
+                //Log.i("English.add(s[0]", english.get(english.indexOf(s[0])) + "At index: " + Integer.toString(english.indexOf(s[0])));
                 spanish.add(s[1]);
                 chinese.add(s[2]);
                 arabic.add(s[3]);
@@ -111,13 +112,17 @@ public class activity_gamePlay extends AppCompatActivity {
             }
             // If file endswith "_" then it's our picture
             if(fields[i].toString().endsWith("_")){
+                //Log.i("Fields[i].toString()", fields[i].toString());
                 String[] s = fields[i].toString().split("_");
                 String engName = s[1];
+                //Log.i("EngName: ", s[1]);
                 int location = 0;
                 // If picture's english name has a corresponding vocab in text file
                 // then there are corresponding translations for every other language we add
-                if(english.contains(engName))
+                if(english.contains(engName)) {
                     location = english.indexOf(engName); // Save location of word for fetching other languages
+                    //Log.i("eng.con("+engName+"):Location:", Integer.toString(location) );
+                }
                 //Log.i("String name", s[1]);
                 if(languageChoosen.equalsIgnoreCase("english"))
                 imageList.put(english.get(location), resourceId);
@@ -165,6 +170,7 @@ public class activity_gamePlay extends AppCompatActivity {
             btntopRightImage.setText(keys.get(currentnotAnswer1));
             btnbottomLeftImage.setText(keys.get(currentnotAnswer2));
             btnbottomRightImage.setText(keys.get(currentnotAnswer3));
+
         }
 
         // Text 2
@@ -260,6 +266,7 @@ public class activity_gamePlay extends AppCompatActivity {
                             btntopRightImage.setText(keys.get(nextnotAnswer1));
                             btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
                             btnbottomRightImage.setText(keys.get(nextnotAnswer3));
+
                         }
 
                         // Text 2
@@ -269,6 +276,7 @@ public class activity_gamePlay extends AppCompatActivity {
                             btntopRightImage.setText(keys.get(nextanswer));
                             btnbottomLeftImage.setText(keys.get(nextnotAnswer2));
                             btnbottomRightImage.setText(keys.get(nextnotAnswer3));
+
                         }
 
                         //Text 3
@@ -278,6 +286,7 @@ public class activity_gamePlay extends AppCompatActivity {
                             btntopRightImage.setText(keys.get(nextnotAnswer2));
                             btnbottomLeftImage.setText(keys.get(nextanswer));
                             btnbottomRightImage.setText(keys.get(nextnotAnswer3));
+
                         }
 
                         //Text 4
