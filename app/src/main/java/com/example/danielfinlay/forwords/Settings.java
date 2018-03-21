@@ -19,6 +19,40 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        // Get Radio Button fields
+        RadioButton eng = findViewById(R.id.english);
+        RadioButton spn = findViewById(R.id.spanish);
+        RadioButton chn = findViewById(R.id.chinese);
+        RadioButton arb = findViewById(R.id.arabic);
+        RadioButton hng = findViewById(R.id.hungarian);
+
+        // Get the current language selected
+        String lang = LanguageChoosen.getInstance().getLanguage();
+
+        // Highlight current language
+        switch (lang){
+            case "english":
+                eng.setChecked(true);
+                break;
+            case "spanish":
+                spn.setChecked(true);
+                break;
+            case "chinese":
+                chn.setChecked(true);
+                break;
+            case "arabic":
+                arb.setChecked(true);
+                break;
+            case "hungarian":
+                hng.setChecked(true);
+                break;
+            // If none selected yet default to english
+            default:
+                eng.setChecked(true);
+
+
+        }
+
         // Get language selected from radio button
         chooseLanguage = (RadioGroup) findViewById(R.id.chooseLanguage);
 
