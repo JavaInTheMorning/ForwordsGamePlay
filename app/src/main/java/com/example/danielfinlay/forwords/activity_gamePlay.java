@@ -2,45 +2,31 @@ package com.example.danielfinlay.forwords;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.danielfinlay.forwords.Model.LanguageChoosen;
 
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class activity_gamePlay extends AppCompatActivity {
 
@@ -62,6 +48,8 @@ public class activity_gamePlay extends AppCompatActivity {
     // For storing which language radio button has currently been selected
     String languageChoosen = LanguageChoosen.getInstance().getLanguage();
 
+    //boolean isMoving = true;
+
     ArrayList<Integer> values = null;
     ArrayList<String> keys = null;
 
@@ -82,7 +70,16 @@ public class activity_gamePlay extends AppCompatActivity {
     TextView mLoadingText = null;
     Random rand;
 
+    //float topLx = 0;
+    //float topLy = 0;
 
+    //float topRx = 0;
+    //float topRy = 0;
+    //float botLx = 0;
+    //float botLy = 0;
+
+    //float botRx = 0;
+    //float botRy = 0;
 
     // Execute this code when screen loads
     @Override
@@ -102,6 +99,18 @@ public class activity_gamePlay extends AppCompatActivity {
         image = findViewById(R.id.mainImage);
         mLoadingText = (TextView) findViewById(R.id.loadingCompleteTextView);
 
+        /*topLx = btntopLeftImage.getX();
+        topLy = btntopLeftImage.getY();
+
+        topRx = btntopRightImage.getX();
+        topRy = btntopRightImage.getY();
+
+        botLx = btnbottomLeftImage.getX();
+        botLy = btnbottomLeftImage.getY();
+
+        botRx = btnbottomRightImage.getX();
+        botRy = btnbottomRightImage.getY();
+        */
 
         // For Storing english vocabulary linked to picture
         english = new ArrayList<String>();
@@ -131,7 +140,7 @@ public class activity_gamePlay extends AppCompatActivity {
         // On create initialize Gameover to false
         gameOver = false;
 
-
+        //isMoving = true;
 
         // ***********************Read vocabulary from text file*******************************
         BufferedReader reader;
@@ -234,18 +243,33 @@ public class activity_gamePlay extends AppCompatActivity {
         animation = ObjectAnimator.ofInt(pb, "progress", 0, 100);
 
         // Let clock run for 5 seconds(5000 milliseconds)
-        animation.setDuration(5000);
+        animation.setDuration(4000);
         animation.setInterpolator(new DecelerateInterpolator());
         animation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-                //Write what you want to happen when the animation starts here
+                //If it's not a game over then the pieces should be moving
+                /*if(isMoving) {
+                    // So create a timer every reset to move the buttons around at a consistent pace
+                    final Timer t = new Timer();
+                    t.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            // Call move buttons every x seconds
+                            moveButtons();
+                            // If gameover has occured/they shouldn't be moving, delete the timer so a new one can be created
+                            if(!isMoving)
+                            t.cancel();
+                        }
+                    }, 0, 100);//put here time 1000 milliseconds=1 second
+                }*/
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
                 //Declare game over when the countdown is complete
                 proclaimGameOver();
+
 
             }
 
@@ -266,12 +290,17 @@ public class activity_gamePlay extends AppCompatActivity {
         // CODE FOR PROGRESS BAR END*********************************
 
 
+
+
         // When btnReset is clicked
         btnReset.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
 
                 // When the game is reset, it is no longer a gameover
                 gameOver = false;
+
+                // On reset, the answer hasn't been selected yet so can't be incorrect yet
+                incorrect = false;
 
                 // When the game is reset, make the reset button invisible
                 btnReset.setVisibility(View.INVISIBLE);
@@ -287,6 +316,10 @@ public class activity_gamePlay extends AppCompatActivity {
 
                 // Set the "GAME OVER"/"INCORRECT" text below the progress bar to be invisible
                 mLoadingText.setVisibility(View.INVISIBLE);
+
+                // make the buttons resume motion
+                //isMoving = true;
+
 
                 // Start the animation back up
                 animation.start();
@@ -317,6 +350,8 @@ public class activity_gamePlay extends AppCompatActivity {
 
                         // Declare that the incorrect option was selected
                         incorrect = true;
+
+                        shakeButton(btntopLeftImage);
 
                         // End the animation
                         // This method calls ProclaimGameOver() -> public void onAnimationEnd(Animator animator) listed above^
@@ -350,6 +385,9 @@ public class activity_gamePlay extends AppCompatActivity {
                         else if(currentanswerButton == 3)
                             btnbottomRightImage.setBackgroundResource(R.drawable.round_button_answer);
                         incorrect = true;
+
+                        shakeButton(btntopRightImage);
+
                         animation.end();}
                     else{
                         // Set the new options/picture for the next question if it's not a game over & the correct button was selected
@@ -377,6 +415,9 @@ public class activity_gamePlay extends AppCompatActivity {
                         else if(currentanswerButton == 3)
                             btnbottomRightImage.setBackgroundResource(R.drawable.round_button_answer);
                         incorrect = true;
+
+                        shakeButton(btnbottomLeftImage);
+
                         animation.end();}
                     else {
                         // Set the new options/picture for the next question if it's not a game over & the correct button was selected
@@ -404,6 +445,9 @@ public class activity_gamePlay extends AppCompatActivity {
                         else if(currentanswerButton == 2)
                             btnbottomLeftImage.setBackgroundResource(R.drawable.round_button_answer);
                         incorrect = true;
+
+                        shakeButton(btnbottomRightImage);
+
                         animation.end();}
                     else
                     {
@@ -553,21 +597,100 @@ public class activity_gamePlay extends AppCompatActivity {
     }
 
 
+    public void shakeButton(View v)
+    {
+
+        Animation shake = AnimationUtils.loadAnimation(activity_gamePlay.this,R.anim.shake);
+        v.startAnimation(shake);
+    }
+
+    /*public void moveButtons(){
+        if(isMoving) {
+            /*float topLx = btntopLeftImage.getX();
+            float topLy = btntopLeftImage.getY();
+
+            float topRx = btntopRightImage.getX();
+            float topRy = btntopRightImage.getY();
+
+            float botLx = btnbottomLeftImage.getX();
+            float botLy = btnbottomLeftImage.getY();
+
+            float botRx = btnbottomRightImage.getX();
+            float botRy = btnbottomRightImage.getY();
+
+            btntopLeftImage.setX(botRx);
+            btntopLeftImage.setY(botRy);
+
+            btnbottomRightImage.setX(topLx);
+            btnbottomRightImage.setY(topLy);
+
+            btnbottomLeftImage.setX(topRx);
+            btnbottomLeftImage.setY(topRy);
+
+            btntopRightImage.setX(botLx);
+            btntopRightImage.setY(botLy);*/
+        /*
+            moveButton(btntopLeftImage);
+            moveButton(btntopRightImage);
+            moveButton(btnbottomLeftImage);
+            moveButton(btnbottomRightImage);
+
+        }
+
+
+       public void moveButton(View v){
+        v.setY(v.getY() - (float)1);
+       }
+    */
+
 
     // Called in animation.end()
     // Set's the text to either "Out of time" or "Incorrect" depending on which one occurred
     private void proclaimGameOver()
     {
-        if(incorrect)
-        mLoadingText.setText("Incorrect");
-        else if(!incorrect)
-        mLoadingText.setText("Out Of Time");
+        // Stop buttons from moving
+        //isMoving = false;
 
-        // Once proper text determined make the text visible
-        mLoadingText.setVisibility(View.VISIBLE);
+        if(incorrect){
+            mLoadingText.setText("Incorrect");
 
-        // since it's a game over make the reset button visible, so it's Onclick method can be called
-        btnReset.setVisibility(View.VISIBLE);
+            // Once proper text determined make the text visible
+            mLoadingText.setVisibility(View.VISIBLE);
+
+            // since it's a game over make the reset button visible, so it's Onclick method can be called
+            btnReset.setVisibility(View.VISIBLE);
+
+        }
+
+        else if(!incorrect){
+            mLoadingText.setText("Out Of Time");
+
+            // Once proper text determined make the text visible
+            mLoadingText.setVisibility(View.VISIBLE);
+            // since it's a game over make the reset button visible, so it's Onclick method can be called
+            btnReset.setVisibility(View.VISIBLE);
+
+            // Shake all the buttons except for correct answer on gameover if time runs out
+            Animation shake = AnimationUtils.loadAnimation(activity_gamePlay.this,R.anim.shake);
+            if(currentanswerButton == 0)
+                btntopLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+            if(currentanswerButton == 1)
+                btntopRightImage.setBackgroundResource(R.drawable.round_button_answer);
+            if(currentanswerButton == 2)
+                btnbottomLeftImage.setBackgroundResource(R.drawable.round_button_answer);
+            if(currentanswerButton == 3)
+                btnbottomRightImage.setBackgroundResource(R.drawable.round_button_answer);
+
+            if(currentanswerButton != 0)
+                btntopLeftImage.startAnimation(shake);
+            if(currentanswerButton != 1)
+                btntopRightImage.startAnimation(shake);
+            if(currentanswerButton != 2)
+                btnbottomLeftImage.startAnimation(shake);
+            if(currentanswerButton != 3)
+                btnbottomRightImage.startAnimation(shake);
+
+        }
 
         // Set gameOver to true so none of the buttons will do anything until reset button is clicked(and its set back to false)
         gameOver = true;

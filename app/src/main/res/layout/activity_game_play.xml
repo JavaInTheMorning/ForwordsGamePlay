@@ -28,7 +28,7 @@
             android:background="@drawable/round_button"
             android:paddingLeft="10dp"
             android:text="Bannana"
-            android:textAlignment="center"></Button>
+            android:textAlignment="center"/>
 
         <Button
             android:id="@+id/topRightImage"
@@ -39,7 +39,7 @@
             android:background="@drawable/round_button"
             android:paddingRight="10dp"
             android:text="Cherry"
-            android:textAlignment="center"></Button>
+            android:textAlignment="center"/>
 
     </RelativeLayout>
 
@@ -79,7 +79,7 @@
             android:background="@drawable/round_button"
             android:paddingLeft="10dp"
             android:text="apple"
-            android:textAlignment="center"></Button>
+            android:textAlignment="center"/>
 
         <Button
             android:id="@+id/resetButton"
@@ -92,7 +92,7 @@
             android:paddingRight="10dp"
             android:text="RESET"
             android:textAlignment="center"
-            android:visibility="invisible"></Button>
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/bottomRightImage"
@@ -103,7 +103,7 @@
             android:background="@drawable/round_button"
             android:paddingRight="10dp"
             android:text="grape"
-            android:textAlignment="center"></Button>
+            android:textAlignment="center"/>
 
 
     </RelativeLayout>
