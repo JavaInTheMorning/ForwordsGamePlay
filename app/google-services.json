@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "441686843652",
+    "firebase_url": "https://forwordsgameplay.firebaseio.com",
+    "project_id": "forwordsgameplay",
+    "storage_bucket": "forwordsgameplay.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441686843652:android:592d7e4915a10bbd",
+        "android_client_info": {
+          "package_name": "com.example.danielfinlay.forwords"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "441686843652-mg3mccif3kf21jsh3056frsnrg56qnlj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.danielfinlay.forwords",
+            "certificate_hash": "de858c64af7f4da630116329be56eba1e77dad40"
+          }
+        },
+        {
+          "client_id": "441686843652-057vq23oad3opiljhr1qgn5asgjvj9fo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGbP_MC1etaUAadoFfJmyjxrcKJnjXRW8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441686843652-057vq23oad3opiljhr1qgn5asgjvj9fo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
