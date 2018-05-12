@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +77,43 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @OnClick(R.id.register_button)
+    void registerClick() {
+        if (!isFormValid()) {
+            return;
+        }
+
+        showProgressDialog();
+
+        firebaseAuth.createUserWithEmailAndPassword(etEmail.getText().toString(), etPassword.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        hideProgressDialog();
+
+                        if (task.isSuccessful()) {
+                            FirebaseUser fbUser = task.getResult().getUser();
+
+                            fbUser.updateProfile(new UserProfileChangeRequest.Builder().
+                                    setDisplayName(usernameFromEmail(fbUser.getEmail())).build());
+
+                            Toast.makeText(LoginActivity.this, "User created", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private String usernameFromEmail(String email) {
+        if (email.contains("@")) {
+            return email.split("@")[0];
+        } else {
+            return email;
+        }
     }
 
     private void showProgressDialog() {
