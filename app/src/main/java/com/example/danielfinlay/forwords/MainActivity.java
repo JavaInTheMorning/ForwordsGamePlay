@@ -1,19 +1,18 @@
 package com.example.danielfinlay.forwords;
 
-import android.app.Application;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
+
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 /**
  * Created by danielfinlay on 3/16/18.
  */
@@ -25,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_user_dash_board);
 
+
+
         //ImageButton btnPlayGame = findViewById(R.id.playButton);
         //Button btnLeaderBoard = findViewById(R.id.LeaderBoard);
         //Button btnStore = findViewById(R.id.Store);
@@ -32,6 +33,35 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.playButton).setOnClickListener(new handlePlayButton());
         findViewById(R.id.Settings).setOnClickListener(new handleSettingsButton());
+    }
+
+    private void initUserSettings() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("user_settings");
+
+        ref.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     class handlePlayButton implements View.OnClickListener {
