@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#000000</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#000000</color>
+    <color name="colorPrimary">#084e7e</color>
+    <color name="colorPrimaryDark">#084e7e</color>
+    <color name="colorAccent">#e7ec55</color>
+    <color name="forwordsPurple">#5b3b89</color>
+    <color name="forwordsLightPurple">#d3c6e7</color>
+
 </resources>
